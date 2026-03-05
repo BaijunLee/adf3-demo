@@ -1,0 +1,66 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "baijun-ADF3-demo"
+		},
+		"AzureBlobStorage1_connectionString": {
+			"value": ""
+		},
+		"AzureBlobStorage2_servicePrincipalCredential": {
+			"value": ""
+		},
+		"AzureDatabricks1_accessToken": {
+			"value": ""
+		},
+		"AzureMySql1_connectionString": {
+			"value": ""
+		},
+		"AzurePostgreSql1_connectionString": {
+			"value": ""
+		},
+		"AzurePostgreSql2_connectionString": {
+			"value": ""
+		},
+		"AzurePostgreSql3_connectionString": {
+			"value": ""
+		},
+		"AzureSqlDatabase1_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=;Initial Catalog="
+		},
+		"AzureSqlDatabase2_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=;Initial Catalog="
+		},
+		"AzureSynapseAnalytics1_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=;Initial Catalog="
+		},
+		"linkedService1_password": {
+			"value": ""
+		},
+		"AzureBlobStorage2_properties_typeProperties_serviceEndpoint": {
+			"value": "https://baijunadls2.blob.core.chinacloudapi.cn/"
+		},
+		"AzureBlobStorage2_properties_typeProperties_tenant": {
+			"value": "954ddad8-66d7-47a8-8f9f-1316152d9587"
+		},
+		"AzureBlobStorage2_properties_typeProperties_servicePrincipalId": {
+			"value": "ea0589be-20b0-493a-90b7-3335cf461894"
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"value": "https://baijunadls2.dfs.core.chinacloudapi.cn/"
+		},
+		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+			"value": "0224-082435-1e4bf0s4"
+		},
+		"linkedService1_properties_typeProperties_userName": {
+			"value": "baijun"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

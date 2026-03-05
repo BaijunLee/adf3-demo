@@ -1,0 +1,3195 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "baijun-ADF3-demo"
+		},
+		"AzureBlobStorage1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
+		},
+		"AzureBlobStorage2_servicePrincipalCredential": {
+			"type": "secureString",
+			"metadata": "Secure string for 'servicePrincipalCredential' of 'AzureBlobStorage2'"
+		},
+		"AzureDatabricks1_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricks1'"
+		},
+		"AzureMySql1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureMySql1'"
+		},
+		"AzurePostgreSql1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzurePostgreSql1'"
+		},
+		"AzurePostgreSql2_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzurePostgreSql2'"
+		},
+		"AzurePostgreSql3_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzurePostgreSql3'"
+		},
+		"AzureSqlDatabase1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase1'",
+			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=;Initial Catalog="
+		},
+		"AzureSqlDatabase2_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase2'",
+			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=;Initial Catalog="
+		},
+		"AzureSynapseAnalytics1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSynapseAnalytics1'",
+			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=;Initial Catalog="
+		},
+		"linkedService1_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'linkedService1'"
+		},
+		"AzureBlobStorage2_properties_typeProperties_serviceEndpoint": {
+			"type": "string",
+			"defaultValue": "https://baijunadls2.blob.core.chinacloudapi.cn/"
+		},
+		"AzureBlobStorage2_properties_typeProperties_tenant": {
+			"type": "string",
+			"defaultValue": "954ddad8-66d7-47a8-8f9f-1316152d9587"
+		},
+		"AzureBlobStorage2_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "ea0589be-20b0-493a-90b7-3335cf461894"
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://baijunadls2.dfs.core.chinacloudapi.cn/"
+		},
+		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0224-082435-1e4bf0s4"
+		},
+		"linkedService1_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "baijun"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/StoragetoSynapse')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ParquetSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFolderPath": "parquet",
+									"wildcardFileName": "Data.Membership.parquet",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "ParquetReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlDWSink",
+								"allowCopyCommand": true,
+								"copyCommandSettings": {},
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "Parquet1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSynapseAnalyticsTable2",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-01-26T05:05:40Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Parquet1')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSynapseAnalyticsTable2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Synapsetostorage')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlDWSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AzureSynapseAnalyticsTable1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Parquet1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-01-26T05:05:40Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AzureSynapseAnalyticsTable1')]",
+				"[concat(variables('factoryId'), '/datasets/Parquet1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline2')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzurePostgreSQLSink",
+								"writeBatchSize": 1000000,
+								"writeBatchTimeout": "00:30:00",
+								"writeMethod": "CopyCommand"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AzurePostgreSqlTable1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzurePostgreSqlTable2",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-01-26T05:05:41Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AzurePostgreSqlTable1')]",
+				"[concat(variables('factoryId'), '/datasets/AzurePostgreSqlTable2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline3')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup1",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": "SELECT ssl, version, cipher\nFROM pg_stat_ssl\nWHERE pid = pg_backend_pid();",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "AzurePostgreSqlTable3",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-01-26T05:05:41Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AzurePostgreSqlTable3')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline4')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup1",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": "SELECT ssl, version, cipher\nFROM pg_stat_ssl\nWHERE pid = pg_backend_pid();",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "AzurePostgreSqlTable2",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-01-26T05:05:41Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AzurePostgreSqlTable2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureMySqlTable1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureMySql1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureMySqlTable",
+				"schema": [
+					{
+						"name": "No_",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "No_ 2",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Description",
+						"precision": 50,
+						"scale": 0
+					},
+					{
+						"name": "Search Description",
+						"precision": 50,
+						"scale": 0
+					},
+					{
+						"name": "Description 2",
+						"precision": 50,
+						"scale": 0
+					},
+					{
+						"name": "Base Unit of Measure",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Price Unit Conversion",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Type",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Inventory Posting Group",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Shelf No_",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Item Disc_ Group",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Allow Invoice Disc_",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Statistics Group",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Commission Group",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Unit Price",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Price_Profit Calculation",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Profit _",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Costing Method",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Unit Cost",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Standard Cost",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Last Direct Cost",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Indirect Cost _",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Cost is Adjusted",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Allow Online Adjustment",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Vendor No_",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Vendor Item No_",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Lead Time Calculation",
+						"precision": 32,
+						"scale": 0
+					},
+					{
+						"name": "Reorder Point",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Maximum Inventory",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Reorder Quantity",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Alternative Item No_",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Unit List Price",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Duty Due _",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Duty Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Gross Weight",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Net Weight",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Units per Parcel",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Unit Volume",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Durability",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Freight Type",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Tariff No_",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Duty Unit Conversion",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Country_Region Purchased Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Budget Quantity",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Budgeted Amount",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Budget Profit",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Blocked",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Last Date Modified",
+						"precision": 19,
+						"scale": 0
+					},
+					{
+						"name": "Last Time Modified",
+						"precision": 19,
+						"scale": 0
+					},
+					{
+						"name": "Price Includes VAT",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "VAT Bus_ Posting Gr_ (Price)",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Gen_ Prod_ Posting Group",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Picture",
+						"precision": 50,
+						"scale": 0
+					},
+					{
+						"name": "Country_Region of Origin Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Automatic Ext_ Texts",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "No_ Series",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Tax Group Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "VAT Prod_ Posting Group",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Reserve",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Global Dimension 1 Code",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Global Dimension 2 Code",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Stockout Warning",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Prevent Negative Inventory",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Application Wksh_ User ID",
+						"precision": 128,
+						"scale": 0
+					},
+					{
+						"name": "Assembly Policy",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "GTIN",
+						"precision": 14,
+						"scale": 0
+					},
+					{
+						"name": "Default Deferral Template Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Low-Level Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Lot Size",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Serial Nos_",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Last Unit Cost Calc_ Date",
+						"precision": 19,
+						"scale": 0
+					},
+					{
+						"name": "Rolled-up Material Cost",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Rolled-up Capacity Cost",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Scrap _",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Inventory Value Zero",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Discrete Order Quantity",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Minimum Order Quantity",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Maximum Order Quantity",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Safety Stock Quantity",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Order Multiple",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Safety Lead Time",
+						"precision": 32,
+						"scale": 0
+					},
+					{
+						"name": "Flushing Method",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Replenishment System",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Rounding Precision",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Sales Unit of Measure",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Purch_ Unit of Measure",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Time Bucket",
+						"precision": 32,
+						"scale": 0
+					},
+					{
+						"name": "Reordering Policy",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Include Inventory",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Manufacturing Policy",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Rescheduling Period",
+						"precision": 32,
+						"scale": 0
+					},
+					{
+						"name": "Lot Accumulation Period",
+						"precision": 32,
+						"scale": 0
+					},
+					{
+						"name": "Dampener Period",
+						"precision": 32,
+						"scale": 0
+					},
+					{
+						"name": "Dampener Quantity",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Overflow Level",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Manufacturer Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Item Category Code",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Created From Nonstock Item",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Product Group Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Service Item Group",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Item Tracking Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Lot Nos_",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Expiration Calculation",
+						"precision": 32,
+						"scale": 0
+					},
+					{
+						"name": "Warehouse Class Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Special Equipment Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Put-away Template Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Put-away Unit of Measure Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Phys Invt Counting Period Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Last Counting Period Update",
+						"precision": 19,
+						"scale": 0
+					},
+					{
+						"name": "Use Cross-Docking",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Next Counting Start Date",
+						"precision": 19,
+						"scale": 0
+					},
+					{
+						"name": "Next Counting End Date",
+						"precision": 19,
+						"scale": 0
+					},
+					{
+						"name": "Print Label",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Use Issue No_",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Consignment Item",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Remark 1",
+						"precision": 250,
+						"scale": 0
+					},
+					{
+						"name": "Remark 2",
+						"precision": 250,
+						"scale": 0
+					},
+					{
+						"name": "Purchase Term",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "MOQ",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Replen_ Frequency",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Transfer Replen_ UOM",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Purchase Replen_ UOM",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "First PO Receipt Date",
+						"precision": 19,
+						"scale": 0
+					},
+					{
+						"name": "First PO Receipt Vendor",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "First PO Receipt Qty_",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Last PO Receipt Date",
+						"precision": 19,
+						"scale": 0
+					},
+					{
+						"name": "Last PO Receipt Vendor",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Last PO Receipt Qty_",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Last WH Store Repl Run",
+						"precision": 19,
+						"scale": 0
+					},
+					{
+						"name": "Author",
+						"precision": 50,
+						"scale": 0
+					},
+					{
+						"name": "Publisher",
+						"precision": 50,
+						"scale": 0
+					},
+					{
+						"name": "Publication Date",
+						"precision": 19,
+						"scale": 0
+					},
+					{
+						"name": "Carton Size",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Frequency",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Brand",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Book Type",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Marketing Remark",
+						"precision": 250,
+						"scale": 0
+					},
+					{
+						"name": "Movie Tie In",
+						"precision": 50,
+						"scale": 0
+					},
+					{
+						"name": "Prize Winner",
+						"precision": 50,
+						"scale": 0
+					},
+					{
+						"name": "Special Price Remark",
+						"precision": 50,
+						"scale": 0
+					},
+					{
+						"name": "Comics_ Style",
+						"precision": 50,
+						"scale": 0
+					},
+					{
+						"name": "Require Write-off",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Require Stock Take",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Require Production",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Brand Code",
+						"precision": 60,
+						"scale": 0
+					},
+					{
+						"name": "Godiva Sales",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Date Created",
+						"precision": 19,
+						"scale": 0
+					},
+					{
+						"name": "Created by User",
+						"precision": 50,
+						"scale": 0
+					},
+					{
+						"name": "Division Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Modifying Date of Status",
+						"precision": 19,
+						"scale": 0
+					},
+					{
+						"name": "Last Modified by User",
+						"precision": 50,
+						"scale": 0
+					},
+					{
+						"name": "Item Error Check Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Item Error Check Status",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Suggested Qty_ on POS",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Item Capacity Value",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Qty not in Decimal",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Warranty Card",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Def_ Ordered by",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Def_ Ordering Method",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Original Vendor No_",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Original Vendor Item No_",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "BOM Method",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "BOM Receipt Print",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Recipe Version Code",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Recipe Item Type",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "BOM Cost Price Distribution",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "BOM Type",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "BOM Receiving Explode",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Depth",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Width",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Height",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "External Item No_",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Extern_ Size+Crust",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Variant Framework Code",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Season Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Lifecycle Length",
+						"precision": 32,
+						"scale": 0
+					},
+					{
+						"name": "Lifecycle Starting Date",
+						"precision": 19,
+						"scale": 0
+					},
+					{
+						"name": "Lifecycle Ending Date",
+						"precision": 19,
+						"scale": 0
+					},
+					{
+						"name": "Error Check Internal Usage",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Attrib 1 Code",
+						"precision": 30,
+						"scale": 0
+					},
+					{
+						"name": "Attrib 2 Code",
+						"precision": 30,
+						"scale": 0
+					},
+					{
+						"name": "Attrib 3 Code",
+						"precision": 30,
+						"scale": 0
+					},
+					{
+						"name": "Attrib 4 Code",
+						"precision": 30,
+						"scale": 0
+					},
+					{
+						"name": "Attrib 5 Code",
+						"precision": 30,
+						"scale": 0
+					},
+					{
+						"name": "ABC Sales",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "ABC Profit",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Wastage _",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Excluded from Portion Weight",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Unaff_ by Multipl_ Factor",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Exclude from Menu Requisition",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Recipe No_ of Portions",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Max_ Modifiers No Price",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Max_ Ingr_ Removed No Price",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Max_ Ingr_ + Modifiers",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Production Time (Min_)",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Display Ingredients in Monitor",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Display Instruct_ in Monitor",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Recipe Main Ingredient",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Recipe Style",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Recipe Category",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Available as Dish",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "UOM Pop-up on POS",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Replenishment Calculation Type",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Manual Estimated Daily Sale",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Store Stock Cover Reqd (Days)",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Wareh Stock Cover Reqd (Days)",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Replenishment Sales Profile",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Replenishment Grade Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Exclude from Replenishment",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Transfer Multiple",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Store Forward Sales Profile",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Wareh_ Forward Sales Profile",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Purch_ Order Delivery",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Replenish as Item No_",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Profit Goal _",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Replen_ Data Profile",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Like for Like Replen_ Method",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Like for Like Process Method",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Replenish as Item No - Method",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Replen_ Transfer Rule Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Select Lowest Price Vendor",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Effective Inv_ Sales Order",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Effective Inv_ Purchase Ord_",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Effective Inv_ Transfer Inb_",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Effective Inv_ Transfer Outb_",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Confidence Factor Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Fuel Item",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Routing No_",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Production BOM No_",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Single-Level Material Cost",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Single-Level Capacity Cost",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Single-Level Subcontrd_ Cost",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Single-Level Cap_ Ovhd Cost",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Single-Level Mfg_ Ovhd Cost",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Overhead Rate",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Rolled-up Subcontracted Cost",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Rolled-up Mfg_ Ovhd Cost",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Rolled-up Cap_ Overhead Cost",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Order Tracking Policy",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Critical",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Item Family Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Unit Price Including VAT",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "POS Cost Calculation",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "No Stock Posting",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Zero Price Valid",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Qty_ Becomes Negative",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "No Discount Allowed",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Keying in Price",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Scale Item",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Keying in Quantity",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Skip Compression When Scanned",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Skip Compression When Printed",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Barcode Mask",
+						"precision": 22,
+						"scale": 0
+					},
+					{
+						"name": "Use EAN Standard Barc_",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Qty_ per Base Comp_ Unit",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Base Comp_ Unit Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Comparison Unit Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Comp_ Price Incl_ VAT",
+						"precision": 38,
+						"scale": 20
+					},
+					{
+						"name": "Explode BOM in Statem_ Posting",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Disable Dispense Printing",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Dispense Printer Group",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Print Variants Shelf Labels",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Common Item No_",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "xWarranty Period",
+						"precision": 32,
+						"scale": 0
+					},
+					{
+						"name": "Kitchen Item",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "TCPOS",
+						"precision": 3,
+						"scale": 0
+					},
+					{
+						"name": "Size",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Color Code",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Color Description",
+						"precision": 30,
+						"scale": 0
+					},
+					{
+						"name": "Collection",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Material Code",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Material Description",
+						"precision": 30,
+						"scale": 0
+					},
+					{
+						"name": "Style Code",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Style Description",
+						"precision": 30,
+						"scale": 0
+					},
+					{
+						"name": "Fit",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Look",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Class",
+						"precision": 20,
+						"scale": 0
+					},
+					{
+						"name": "Mark Down",
+						"precision": 50,
+						"scale": 0
+					},
+					{
+						"name": "Department",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Born Season",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Product Category",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Filename",
+						"precision": 50,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"tableName": "`item2`"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureMySql1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzurePostgreSqlTable1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzurePostgreSql1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "public",
+					"table": "test"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzurePostgreSqlTable2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzurePostgreSql2",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "val",
+						"precision": 53,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "public",
+					"table": "test"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzurePostgreSqlTable3')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzurePostgreSql3",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [
+					{
+						"name": "id",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "val",
+						"precision": 53,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "public",
+					"table": "test"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql3')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSynapseAnalyticsTable1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "Data",
+					"table": "Membership"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSynapseAnalytics1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSynapseAnalyticsTable2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSynapseAnalytics1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [
+					{
+						"name": "MemberID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "FirstName",
+						"type": "varchar"
+					},
+					{
+						"name": "LastName",
+						"type": "varchar"
+					},
+					{
+						"name": "Phone",
+						"type": "varchar"
+					},
+					{
+						"name": "Email",
+						"type": "varchar"
+					},
+					{
+						"name": "DiscountCode",
+						"type": "smallint",
+						"precision": 5
+					}
+				],
+				"typeProperties": {
+					"schema": "Data",
+					"table": "membership1"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSynapseAnalytics1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "1",
+						"folderPath": "adf_test1",
+						"container": "backup"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "",
+					"firstRowAsHeader": true,
+					"quoteChar": ""
+				},
+				"schema": [
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					},
+					{
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage2",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "membership.txt",
+						"container": "testsynapse"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\"",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText3')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "membership.txt",
+						"fileSystem": "testsynapse"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\"",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "MemberID",
+						"type": "String"
+					},
+					{
+						"name": "FirstName",
+						"type": "String"
+					},
+					{
+						"name": "LastName",
+						"type": "String"
+					},
+					{
+						"name": "Phone",
+						"type": "String"
+					},
+					{
+						"name": "Email",
+						"type": "String"
+					},
+					{
+						"name": "DiscountCode",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Parquet1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "Data.Membership.parquet",
+						"folderPath": "parquet",
+						"fileSystem": "testsynapse"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage2')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"serviceEndpoint": "[parameters('AzureBlobStorage2_properties_typeProperties_serviceEndpoint')]",
+					"tenant": "[parameters('AzureBlobStorage2_properties_typeProperties_tenant')]",
+					"servicePrincipalId": "[parameters('AzureBlobStorage2_properties_typeProperties_servicePrincipalId')]",
+					"servicePrincipalCredentialType": "ServicePrincipalKey",
+					"servicePrincipalCredential": {
+						"type": "SecureString",
+						"value": "[parameters('AzureBlobStorage2_servicePrincipalCredential')]"
+					},
+					"accountKind": "StorageV2"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStorage1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AzureDataLakeStorage1_properties_typeProperties_url')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDatabricks1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-2172008983090862.2.databricks.azure.cn",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDatabricks1_accessToken')]"
+					},
+					"existingClusterId": "[parameters('AzureDatabricks1_properties_typeProperties_existingClusterId')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureMySql1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureMySql",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureMySql1_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzurePostgreSql1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzurePostgreSql",
+				"version": "1.0",
+				"typeProperties": {
+					"connectionString": "[parameters('AzurePostgreSql1_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "integrationRuntime3",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/integrationRuntime3')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzurePostgreSql2')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzurePostgreSql",
+				"version": "1.0",
+				"typeProperties": {
+					"connectionString": "[parameters('AzurePostgreSql2_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "integrationRuntime3",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/integrationRuntime3')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzurePostgreSql3')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzurePostgreSql",
+				"version": "1.0",
+				"typeProperties": {
+					"connectionString": "[parameters('AzurePostgreSql3_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "integrationRuntime2",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/integrationRuntime2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabase1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureSqlDatabase1_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabase2')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureSqlDatabase2_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSynapseAnalytics1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureSynapseAnalytics1_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/linkedService1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HDInsight",
+				"typeProperties": {
+					"clusterUri": "https://baijun-hdi-test2.azurehdinsight.cn",
+					"clusterAuthType": "BasicAuth",
+					"userName": "[parameters('linkedService1_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('linkedService1_password')]"
+					},
+					"isEspEnabled": false,
+					"linkedServiceName": {
+						"referenceName": "AzureBlobStorage1",
+						"type": "LinkedServiceReference"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trigger1')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Hour",
+						"interval": 24,
+						"startTime": "2024-01-25T04:07:00",
+						"timeZone": "China Standard Time"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/integrationRuntime1')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/integrationRuntime2')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/integrationRuntime3')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		}
+	]
+}

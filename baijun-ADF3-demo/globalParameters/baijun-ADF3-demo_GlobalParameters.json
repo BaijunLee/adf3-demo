@@ -1,0 +1,10 @@
+{
+	"testgp3": {
+		"type": "string",
+		"value": "aaa"
+	},
+	"testgp5": {
+		"type": "string",
+		"value": "aaa"
+	}
+}
