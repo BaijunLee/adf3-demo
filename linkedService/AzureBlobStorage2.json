@@ -1,0 +1,19 @@
+{
+	"name": "AzureBlobStorage2",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"serviceEndpoint": "https://baijunadls2.blob.core.chinacloudapi.cn/",
+			"tenant": "954ddad8-66d7-47a8-8f9f-1316152d9587",
+			"servicePrincipalId": "ea0589be-20b0-493a-90b7-3335cf461894",
+			"servicePrincipalCredentialType": "ServicePrincipalKey",
+			"servicePrincipalCredential": {
+				"type": "SecureString",
+				"value": "**********"
+			},
+			"accountKind": "StorageV2"
+		}
+	}
+}

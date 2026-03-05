@@ -1,0 +1,21 @@
+{
+	"name": "baijun-ADF3-demo",
+	"properties": {
+		"globalParameters": {
+			"testgp3": {
+				"type": "string",
+				"value": "aaa"
+			},
+			"testgp5": {
+				"type": "string",
+				"value": "aaa"
+			}
+		}
+	},
+	"location": "chinaeast2",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "a7f0c7a9-795a-4e3f-87c7-0ac5a9784acc",
+		"tenantId": "954ddad8-66d7-47a8-8f9f-1316152d9587"
+	}
+}
